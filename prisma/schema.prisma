@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionStatus {
+  معلق
+  موافق
+  مكتمل
+  مرفوض
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  username String   @unique
+  email    String   @unique
+  password String
+  created  DateTime @default(now())
+  updated  DateTime @updatedAt
+}
+
+model Fuel {
+  id      String   @id @default(cuid())
+  name    String
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  Car     Car[]
+  Tank    Tank[]
+  Order   Order[]
+}
+
+model Employee {
+  id           String        @id @default(cuid())
+  name         String
+  startDate    DateTime?     @default(now())
+  endDate      DateTime?
+  phone        String?
+  email        String?
+  address      String?
+  team         String?
+  major        String?
+  quota        Float?        @default(200)
+  initialQuota Float?        @default(200)
+  created      DateTime      @default(now())
+  updated      DateTime      @updatedAt
+  Car          Car[]
+  Transaction  Transaction[]
+}
+
+model Car {
+  id          String        @id @default(cuid())
+  employeeId  String
+  employee    Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  carModel    String
+  fuelId      String
+  fuel        Fuel          @relation(fields: [fuelId], references: [id], onDelete: Cascade)
+  isEaaCar    Boolean
+  plate       String?
+  created     DateTime      @default(now())
+  updated     DateTime      @updatedAt
+  Transaction Transaction[]
+}
+
+model Tank {
+  id           String        @id @default(cuid())
+  fuelId       String
+  fuel         Fuel          @relation(fields: [fuelId], references: [id], onDelete: Cascade)
+  name         String
+  capacity     Float
+  currentLevel Float
+  created      DateTime      @default(now())
+  updated      DateTime      @updatedAt
+  Order        Order[]
+  Transaction  Transaction[]
+}
+
+model Order {
+  id      String   @id @default(cuid())
+  number  String?  @unique
+  fuelId  String
+  fuel    Fuel     @relation(fields: [fuelId], references: [id], onDelete: Cascade)
+  tankId  String
+  tank    Tank     @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  amount  Float
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+}
+
+model Transaction {
+  id         String            @id @default(cuid())
+  tankId     String
+  tank       Tank              @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  carId      String
+  car        Car               @relation(fields: [carId], references: [id], onDelete: Cascade)
+  amount     Float?
+  status     TransactionStatus @default(معلق)
+  created    DateTime          @default(now())
+  updated    DateTime          @updatedAt
+}
