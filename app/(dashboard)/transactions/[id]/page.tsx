@@ -101,6 +101,8 @@ const Page = () => {
       (employee) => employee.id === values.employeeId
     );
 
+    const car = data.cars.find((car) => car.id === values.carId);
+
     if (!tank || !employee) {
       toast.error("الرجاء إختيار خزان وموظف صالحين");
       return;
@@ -108,6 +110,11 @@ const Page = () => {
 
     if (values.amount > tank.currentLevel) {
       toast.error("الخزان لا يكفي لهذه العملية");
+      return;
+    }
+
+    if (car?.fuelId !== tank.fuelId) {
+      toast.error("وقود المركبة لا يتطابق مع نوع الوقود الموجود في الخزان");
       return;
     }
 
