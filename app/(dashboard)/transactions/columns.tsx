@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Prisma } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Printer, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -23,6 +23,8 @@ import toast from "react-hot-toast";
 import { queryClient } from "../layout";
 import { Badge } from "@/components/ui/badge";
 import { formatLitre } from "@/lib/utils";
+import ReactDOM from "react-dom/client";
+import PrintTransactionReceipt from "@/components/print/printTransactionReciept";
 
 export const columns: ColumnDef<
   Prisma.TransactionGetPayload<{
@@ -95,8 +97,49 @@ export const columns: ColumnDef<
           queryClient.invalidateQueries({ queryKey: ["transactions"] });
         },
       });
+
+      const handlePrintReciept = () => {
+        const transaction = row.original;
+        const printWindow = window.open("", "_blank");
+
+        const receiptContent = `
+        <html>
+        <head>
+        <title>إيصال عملية وقود</title>
+        <style>
+        body {
+        font-family: 'Arial', sans-serif;
+        direction: rtl;
+        }
+        <body>
+        <div></div>
+        <div>
+        <table>
+        <tr>
+        <td>رقم العملية</td>
+        <td>${transaction.id}</td>
+        </tr>
+        </table>
+        </div>
+        </body>
+        </head>
+        </html>
+  `;
+
+        // Write the content to the new window
+        printWindow?.document.write(receiptContent);
+        printWindow?.document.close();
+
+        // Trigger the print dialog
+        printWindow?.print();
+      };
+
       return (
         <div className="flex items-center justify-end gap-2 ml-2">
+          <Button variant={"outline"} size={"sm"} onClick={handlePrintReciept}>
+            <Printer />
+            طباعة
+          </Button>
           <Button
             onClick={() => router.push(`/transactions/${row.original.id}`)}
             size={"sm"}

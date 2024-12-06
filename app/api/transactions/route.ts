@@ -10,6 +10,9 @@ export async function GET(req: Request) {
         employee: true,
         tank: true,
       },
+      orderBy: {
+        created: "desc",
+      },
     });
 
     return NextResponse.json(response, { status: 200 });

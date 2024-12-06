@@ -60,8 +60,8 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <div className="w-[250px] sticky top-0 h-screen border-l p-5 flex flex-col gap-10">
-      <div className="flex items-center justify-start gap-2">
-        <Image alt="Logo" src={"/images/Logo.png"} width={50} height={50} />
+      <div className="flex flex-col items-center justify-center gap-1.5 mt-5">
+        <Image alt="Logo" src={"/images/Logo.png"} width={80} height={80} />
         <h1 className="text-xl font-black">إدارة الوقود</h1>
       </div>
       <UserNav />

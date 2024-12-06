@@ -17,6 +17,9 @@ export async function GET(
         employee: true,
         fuel: true,
       },
+      orderBy: {
+        created: "desc",
+      },
     });
 
     return NextResponse.json(response, { status: 200 });

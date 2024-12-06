@@ -9,6 +9,9 @@ export async function GET(req: Request) {
         fuel: true,
         tank: true,
       },
+      orderBy: {
+        created: "desc",
+      },
     });
 
     return NextResponse.json(response, { status: 200 });
