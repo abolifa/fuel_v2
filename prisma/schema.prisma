@@ -64,6 +64,7 @@ model Car {
   created     DateTime      @default(now())
   updated     DateTime      @updatedAt
   Transaction Transaction[]
+  Maintenance Maintenance[]
 }
 
 model Tank {
@@ -103,4 +104,34 @@ model Transaction {
   status     TransactionStatus @default(معلق)
   created    DateTime          @default(now())
   updated    DateTime          @updatedAt
+}
+
+model MaintenanceType {
+  id           String                         @id @default(cuid())
+  name         String
+  created      DateTime                       @default(now())
+  updated      DateTime                       @updatedAt
+  maintenances MaintenanceTypeOnMaintenance[]
+}
+
+model Maintenance {
+  id          String                         @id @default(cuid())
+  carId       String
+  car         Car                            @relation(fields: [carId], references: [id], onDelete: Cascade)
+  description String?
+  cost        Float?
+  odoMeter    Float?
+  types       MaintenanceTypeOnMaintenance[]
+  created     DateTime                       @default(now())
+  updated     DateTime                       @updatedAt
+}
+
+model MaintenanceTypeOnMaintenance {
+  id                String          @id @default(cuid())
+  maintenanceId     String
+  maintenance       Maintenance     @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  maintenanceTypeId String
+  maintenanceType   MaintenanceType @relation(fields: [maintenanceTypeId], references: [id], onDelete: Cascade)
+  created           DateTime        @default(now())
+  updated           DateTime        @default(now())
 }

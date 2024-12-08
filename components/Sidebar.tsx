@@ -9,6 +9,7 @@ import {
   Receipt,
   Sparkle,
   Users,
+  Wrench,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,6 +53,11 @@ const pages = [
     title: "أنواع الوقود",
     href: "/fuels",
     icon: FuelIcon,
+  },
+  {
+    title: "الصيانة",
+    href: "/maintenance",
+    icon: Wrench,
   },
 ];
 

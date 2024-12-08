@@ -3,7 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Prisma } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { Edit, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,78 +20,91 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { queryClient } from "../layout";
 import { Badge } from "@/components/ui/badge";
-import { queryClient } from "@/app/(dashboard)/layout";
-import EditCar from "./EditCar";
-import { useState } from "react";
 
 export const columns: ColumnDef<
-  Prisma.CarGetPayload<{ include: { fuel: true; employee: true } }>
+  Prisma.MaintenanceGetPayload<{
+    include: { car: true; types: { include: { maintenanceType: true } } };
+  }>
 >[] = [
   {
     accessorKey: "id",
-    header: "إسم المركبة",
+    header: "رقم الصيانة",
+    cell: ({ row }) => <Badge>{row.original.id}</Badge>,
   },
   {
-    accessorKey: "carModel",
-    header: "إسم المركبة",
+    accessorKey: "car.carModel",
+    header: "موديل السيارة",
+    cell: ({ row }) => row.original.car?.carModel || "غير متوفر",
   },
   {
-    accessorKey: "fuelId",
-    header: "نوع الوقود",
-    cell: ({ row }) => {
-      const fuel = row.original.fuel.name;
-      return <Badge>{fuel}</Badge>;
-    },
+    accessorKey: "odoMeter",
+    header: "عداد السيارة",
+    cell: ({ row }) => row.original.odoMeter || "غير متوفر",
   },
   {
-    accessorKey: "plate",
-    header: "رقم اللوحة",
+    accessorKey: "types",
+    header: "نوع الصيانة",
+    cell: ({ row }) =>
+      row.original.types.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {row.original.types.map((type) => (
+            <Badge key={type.id}>{type.maintenanceType.name}</Badge>
+          ))}
+        </div>
+      ) : (
+        "غير متوفر"
+      ),
   },
   {
-    accessorKey: "isEaaCar",
-    header: "الملكية",
-    cell: ({ row }) => {
-      const isEaaCar = row.original.isEaaCar;
-      return isEaaCar ? <Badge>الجهاز</Badge> : <Badge>الموظف</Badge>;
-    },
+    accessorKey: "cost",
+    header: "التكلفة",
+    cell: ({ row }) => `${row.original.cost?.toFixed(2) || "0"} ريال`,
+  },
+  {
+    accessorKey: "created",
+    header: "تاريخ الإنشاء",
+    cell: ({ row }) => format(new Date(row.original.created), "yyyy-MM-dd"),
+  },
+  {
+    accessorKey: "updated",
+    header: "تاريخ التحديث",
+    cell: ({ row }) => format(new Date(row.original.updated), "yyyy-MM-dd"),
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const [open, setOpen] = useState(false);
-
-      const handleOpen = () => {
-        setOpen(true);
-      };
-
-      const handleClose = () => {
-        setOpen(false);
-      };
+      const router = useRouter();
 
       const mutation = useMutation({
-        mutationKey: ["cars"],
+        mutationKey: ["maintenance"],
         mutationFn: async () => {
-          await axios.delete(
-            `/api/cars/${row.original.employeeId}/${row.original.id}`
-          );
+          await axios.delete(`/api/maintenance/${row.original.id}`);
         },
         onMutate: () => {
-          toast.loading("جاري حذف البيانات...", { id: "delete-car" });
+          toast.loading("جاري حذف البيانات...", { id: "delete-maintenance" });
         },
-        onError: () => {
-          toast.error("حدث خطأ أثناء حذف البيانات", { id: "delete-car" });
+        onError: (error) => {
+          toast.error("حدث خطأ أثناء حذف البيانات", {
+            id: "delete-maintenance",
+          });
         },
         onSuccess: () => {
-          toast.success("تم حذف البيانات بنجاح", { id: "delete-car" });
+          toast.success("تم حذف البيانات بنجاح", { id: "delete-maintenance" });
         },
         onSettled: () => {
-          queryClient.invalidateQueries({ queryKey: ["cars"] });
+          queryClient.invalidateQueries({ queryKey: ["maintenance"] });
         },
       });
+
       return (
         <div className="flex items-center justify-end gap-2 ml-2">
-          <Button onClick={handleOpen} size={"sm"} variant={"outline"}>
+          <Button
+            onClick={() => router.push(`/maintenance/${row.original.id}`)}
+            size={"sm"}
+            variant={"outline"}
+          >
             <Edit />
             تعديل
           </Button>
@@ -117,13 +132,6 @@ export const columns: ColumnDef<
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-
-          <EditCar
-            open={open}
-            onClose={handleClose}
-            car={row.original}
-            employeeId={row.original.employee.id}
-          />
         </div>
       );
     },
