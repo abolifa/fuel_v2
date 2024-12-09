@@ -67,13 +67,14 @@ const Page = () => {
         if (id !== "new") {
           const res = await axios.get(`/api/maintenance/${id}`);
           console.log("Data fetched:", res.data);
+          setData(res.data);
 
           form.reset({
             carId: res.data.carId,
             description: res.data.description,
             odoMeter: res.data.odoMeter,
             cost: res.data.cost,
-            types: res.data.types.map((type) => type.maintenanceTypeId), // Ensure this maps to `maintenanceTypeId`
+            types: res.data.types.map((type: any) => type.maintenanceTypeId),
           });
         }
       } catch (error) {
