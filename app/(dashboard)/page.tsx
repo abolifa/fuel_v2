@@ -4,6 +4,7 @@ import Heading from "@/components/Heading";
 import LoadingTable from "@/components/LoadingTable";
 import TankCard from "@/components/TankCard";
 import { Separator } from "@/components/ui/separator";
+import { refresh_time } from "@/lib/constant";
 import { Prisma, Tank } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -17,6 +18,7 @@ export default function Home() {
       >("/api/tanks");
       return res.data;
     },
+    refetchInterval: refresh_time,
   });
   return (
     <div className="w-full h-full p-10 space-y-5">

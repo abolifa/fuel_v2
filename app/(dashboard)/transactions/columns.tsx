@@ -109,7 +109,9 @@ export const columns: ColumnDef<
           toast.success("تم حذف البيانات بنجاح", { id: "delete-transactions" });
         },
         onSettled: () => {
-          queryClient.invalidateQueries({ queryKey: ["transactions"] });
+          queryClient.invalidateQueries({
+            queryKey: ["transactions", "transactions-pending"],
+          });
         },
       });
 

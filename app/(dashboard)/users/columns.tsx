@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Employee } from "@prisma/client";
+import { Fuel, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Edit, Trash2 } from "lucide-react";
@@ -22,66 +22,34 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { queryClient } from "../layout";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown } from "lucide-react";
 
-export const columns: ColumnDef<Employee>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
-    header: "رقم الموظف",
+    header: "رقم المستخدم",
     cell: ({ row }) => <Badge>{row.original.id}</Badge>,
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          الأسم
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "الإسم",
   },
   {
-    accessorKey: "phone",
-    header: "رقم الهاتف",
-    cell: ({ row }) => (
-      <p style={{ direction: "ltr" }} className="text-center">
-        {row.original.phone}
-      </p>
-    ),
+    accessorKey: "username",
+    header: "إسم المستخدم",
   },
   {
     accessorKey: "email",
     header: "البريد الإلكتروني",
   },
   {
-    accessorKey: "team",
-    header: "الفريق",
+    accessorKey: "created",
+    header: "تاريخ الإنشاء",
+    cell: ({ row }) => format(new Date(row.original.created), "yyyy-MM-dd"),
   },
   {
-    accessorKey: "major",
-    header: "التخصص",
-  },
-  {
-    accessorKey: "startDate",
-    header: "تاريخ التعيين",
-    cell: ({ row }) =>
-      format(
-        new Date(row.original.startDate ? row.original.startDate : "no date"),
-        "yyyy-MM-dd"
-      ),
-  },
-  {
-    accessorKey: "quota",
-    header: "الحصة الشهرية",
-    cell: ({ row }) => <Badge>{row.original.quota}</Badge>,
-  },
-  {
-    accessorKey: "initialQuota",
-    header: "الحصة الافتراضية",
+    accessorKey: "updated",
+    header: "تاريخ التحديث",
+    cell: ({ row }) => format(new Date(row.original.updated), "yyyy-MM-dd"),
   },
   {
     id: "actions",
@@ -89,27 +57,27 @@ export const columns: ColumnDef<Employee>[] = [
       const router = useRouter();
 
       const mutation = useMutation({
-        mutationKey: ["employees"],
+        mutationKey: ["users"],
         mutationFn: async () => {
-          await axios.delete(`/api/employees/${row.original.id}`);
+          await axios.delete(`/api/users/${row.original.id}`);
         },
         onMutate: () => {
-          toast.loading("جاري حذف الموظف...", { id: "delete-employee" });
+          toast.loading("جاري حذف البيانات...", { id: "delete-user" });
         },
         onError: (error) => {
-          toast.error("حدث خطأ أثناء حذف الموظف", { id: "delete-employee" });
+          toast.error("حدث خطأ أثناء حذف البيانات", { id: "delete-user" });
         },
         onSuccess: () => {
-          toast.success("تم حذف الموظف بنجاح", { id: "delete-employee" });
+          toast.success("تم حذف البيانات بنجاح", { id: "delete-user" });
         },
         onSettled: () => {
-          queryClient.invalidateQueries({ queryKey: ["employees"] });
+          queryClient.invalidateQueries({ queryKey: ["users"] });
         },
       });
       return (
         <div className="flex items-center justify-end gap-2 ml-2">
           <Button
-            onClick={() => router.push(`/employees/${row.original.id}`)}
+            onClick={() => router.push(`/users/${row.original.id}`)}
             size={"sm"}
             variant={"outline"}
           >

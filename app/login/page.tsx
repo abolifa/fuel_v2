@@ -51,6 +51,7 @@ const Page = () => {
       });
       if (response.status === 200) {
         toast.success("تم تسجيل الدخول بنجاح");
+        console.log(response.data);
         router.push("/");
       }
     } catch (error) {

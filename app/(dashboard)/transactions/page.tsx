@@ -10,7 +10,7 @@ import { columns } from "./columns";
 
 const Page = () => {
   const { data, isError, error, isLoading } = useQuery({
-    queryKey: ["transactions"],
+    queryKey: ["transactions", "transactions-pending"],
     queryFn: async () => {
       const res = await axios.get("/api/transactions");
       return res.data;

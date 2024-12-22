@@ -8,33 +8,42 @@ import {
   LogOut,
   Receipt,
   Sparkle,
+  UserCheck,
   Users,
   Wrench,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
 import UserNav from "./UserNav";
 import { Separator } from "./ui/separator";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "./ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const [transactionCount, setTransactionCount] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchPendingTransactions = async () => {
-      try {
-        const response = await axios.get("/api/transactions/pending");
-        setTransactionCount(response.data);
-      } catch (error) {
-        console.error("Error fetching pending transactions:", error);
-      }
-    };
-
-    fetchPendingTransactions();
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/transactions/pending");
+      return data as number;
+    },
+  });
 
   const pages = [
     {
@@ -46,7 +55,7 @@ const Sidebar = () => {
       title: "المعاملات",
       href: "/transactions",
       icon: DollarSign,
-      badge: transactionCount,
+      badge: data,
     },
     {
       title: "الخزانات",
@@ -74,11 +83,25 @@ const Sidebar = () => {
       icon: FuelIcon,
     },
     {
+      title: "المستخدمين",
+      href: "/users",
+      icon: UserCheck,
+    },
+    {
       title: "الصيانة",
       href: "/maintenance",
       icon: Wrench,
     },
   ];
+
+  const router = useRouter();
+
+  async function handleLogout() {
+    await axios.post("/api/auth/logout").then(() => {
+      toast.success("تم تسجيل الخروج");
+      router.push("/login");
+    });
+  }
 
   return (
     <div className="w-[300px] sticky top-0 h-screen border-l p-5 flex flex-col gap-5">
@@ -119,13 +142,26 @@ const Sidebar = () => {
       </div>
 
       <div className="mt-auto">
-        <Link
-          href="/logout"
-          className="flex items-center justify-start gap-3 p-2"
-        >
-          <LogOut className="w-5 h-5" />
-          <p className="text-xs font-semibold">تسجيل الخروج</p>
-        </Link>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant={"ghost"} className="w-full">
+              <LogOut className="w-5 h-5" />
+              <p className="text-xs">تسجيل الخروج</p>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>تسجيل الخروج؟</AlertDialogTitle>
+              <AlertDialogDescription>هل أنت متأكد</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>رجوع</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLogout}>
+                إستمرار
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

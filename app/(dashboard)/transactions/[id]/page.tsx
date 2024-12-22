@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import toast from "react-hot-toast";
+import { queryClient } from "../../layout";
 
 const formSchema = z.object({
   tankId: z.string().nonempty("الرجاء إختيار خزان صالح"),
@@ -141,6 +142,8 @@ const Page = () => {
     } catch (error) {
       console.error(error);
       toast.error("حدث خطأ ما");
+    } finally {
+      queryClient.invalidateQueries();
     }
   }
 

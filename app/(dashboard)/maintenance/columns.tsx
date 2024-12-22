@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Prisma } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Edit, Trash2 } from "lucide-react";
+import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -40,7 +40,17 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "odoMeter",
-    header: "عداد السيارة",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          عداد المركبة
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => row.original.odoMeter || "غير متوفر",
   },
   {

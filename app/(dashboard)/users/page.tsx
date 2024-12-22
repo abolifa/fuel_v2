@@ -1,18 +1,18 @@
 "use client";
 
+import { DataTable } from "@/components/DataTable";
 import Heading from "@/components/Heading";
 import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { columns } from "./columns";
 import LoadingTable from "@/components/LoadingTable";
-import { DataTable } from "./DataTable";
 
 const Page = () => {
   const { data, isError, error, isLoading } = useQuery({
-    queryKey: ["employees"],
+    queryKey: ["users"],
     queryFn: async () => {
-      const res = await axios.get("/api/employees");
+      const res = await axios.get("/api/users");
       return res.data;
     },
   });
@@ -20,9 +20,9 @@ const Page = () => {
   return (
     <div className="space-y-4">
       <Heading
-        title="الموظفين"
-        subTitle="إدارة كافة الموظفين في النظام"
-        action="employees"
+        title="مستخدمي النظام"
+        subTitle="إدارة كافة المستخدمين في النظام"
+        action="users"
       />
       <Separator />
       {isLoading ? (
