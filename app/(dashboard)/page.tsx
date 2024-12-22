@@ -22,7 +22,6 @@ export default function Home() {
   });
   return (
     <div className="w-full h-full p-10 space-y-5">
-      <Heading title="الخزانات" subTitle="" action="" />
       <Separator />
       {isLoading ? (
         <LoadingTable />

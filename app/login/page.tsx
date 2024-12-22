@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // Form schema for dynamic validation
 const formSchema = z.object({
@@ -60,9 +61,13 @@ const Page = () => {
   }
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      <div className="w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 border py-10 px-5 rounded-lg space-y-5">
-        <h1 className="text-center text-lg font-black">Login Page</h1>
+    <div className="w-screen h-screen flex items-center justify-center bg-blue-900">
+      <div className="w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 border py-10 px-5 rounded-lg space-y-5 bg-white dark:bg-muted">
+        <div className="flex flex-col items-center justify-center gap-3 mb-10">
+          <Image alt="Logo" src={"/images/Logo.png"} width={80} height={80} />
+          <h1 className="text-xl font-bold">جهاز الطيران الإلكتروني</h1>
+          <p>تسجيل الدخول</p>
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -95,11 +100,7 @@ const Page = () => {
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              className="w-full mt-5 font-bold"
-              variant={"secondary"}
-            >
+            <Button type="submit" className="w-full mt-5 font-bold">
               دخول
             </Button>
           </form>
