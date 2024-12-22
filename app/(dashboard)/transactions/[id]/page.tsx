@@ -33,7 +33,7 @@ const formSchema = z.object({
   tankId: z.string().nonempty("الرجاء إختيار خزان صالح"),
   employeeId: z.string().nonempty("الرجاء إختيار موظف صالح"),
   carId: z.string().nonempty("الرجاء إختيار مركبة صالحة"),
-  amount: z.number().positive("الكمية يجب أن تكون أكبر من صفر"),
+  amount: z.any(),
   status: z.string().optional(),
 });
 
@@ -58,8 +58,7 @@ const Page = () => {
       tankId: "",
       employeeId: "",
       carId: "",
-      // @ts-ignore
-      amount: "",
+      amount: 0,
       status: "معلق",
     },
   });
@@ -108,7 +107,7 @@ const Page = () => {
       return;
     }
 
-    if (values.amount > tank.currentLevel) {
+    if (values.amount && values.amount > tank.currentLevel) {
       toast.error("الخزان لا يكفي لهذه العملية");
       return;
     }
@@ -120,7 +119,7 @@ const Page = () => {
 
     const quota = employee.quota;
 
-    if (quota && values.amount > quota) {
+    if (quota && values.amount! > quota) {
       // alert with yes and no
       if (
         !confirm("هذا الموظف قد تجاوز الحصة المسموحة له، هل تريد المتابعة؟")
@@ -205,7 +204,6 @@ const Page = () => {
                   />
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="amount"
@@ -215,11 +213,14 @@ const Page = () => {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={loading}
-                        type="number"
-                        onChange={(e) =>
-                          field.onChange(Number(e.target.value) || 0)
+                        disabled={
+                          loading || form.getValues("status") !== "مكتمل"
                         }
+                        type="number"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value ? Number(value) : 0);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -233,7 +234,15 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>الحالة</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        if (value === "معلق" || value === "مرفوض") {
+                          form.setValue("amount", 0); // Reset the amount to 0
+                        }
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger disabled={loading}>
                           <SelectValue placeholder="إختر الحالة" />
@@ -241,7 +250,6 @@ const Page = () => {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="معلق">معلق</SelectItem>
-                        <SelectItem value="موافق">موافق</SelectItem>
                         <SelectItem value="مكتمل">مكتمل</SelectItem>
                         <SelectItem value="مرفوض">مرفوض</SelectItem>
                       </SelectContent>

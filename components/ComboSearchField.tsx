@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -41,10 +41,17 @@ const SearchableCombobox = <T,>({
   getOptionLabel,
   getOptionValue,
 }: SearchableComboboxProps<T>) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (value: string) => {
+    field.onChange(value); // Set the selected value
+    setIsOpen(false); // Close the popover
+  };
+
   return (
     <FormItem className="flex flex-col">
       <FormLabel>{label}</FormLabel>
-      <Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <FormControl>
             <Button
@@ -54,6 +61,7 @@ const SearchableCombobox = <T,>({
                 "w-full justify-between",
                 !field.value && "text-muted-foreground"
               )}
+              onClick={() => setIsOpen((prev) => !prev)} // Toggle popover on click
             >
               {field.value
                 ? getOptionLabel(
@@ -76,7 +84,7 @@ const SearchableCombobox = <T,>({
                   <CommandItem
                     key={getOptionValue(option)}
                     value={getOptionValue(option)}
-                    onSelect={() => field.onChange(getOptionValue(option))}
+                    onSelect={() => handleSelect(getOptionValue(option))}
                   >
                     {getOptionLabel(option)}
                     <Check

@@ -9,7 +9,6 @@ datasource db {
 
 enum TransactionStatus {
   معلق
-  موافق
   مكتمل
   مرفوض
 }

@@ -22,9 +22,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { queryClient } from "../layout";
 import { Badge } from "@/components/ui/badge";
-import { formatLitre } from "@/lib/utils";
-import ReactDOM from "react-dom/client";
-import PrintTransactionReceipt from "@/components/print/printTransactionReciept";
+import { cn, formatLitre } from "@/lib/utils";
 
 export const columns: ColumnDef<
   Prisma.TransactionGetPayload<{
@@ -71,6 +69,23 @@ export const columns: ColumnDef<
     cell: ({ row }) => (
       <Badge>{format(new Date(row.original.created), "yyyy-MM-dd")}</Badge>
     ),
+  },
+  {
+    accessorKey: "status",
+    header: "حالة العملية",
+    cell: ({ row }) => {
+      const statusColor =
+        row.original.status == "معلق"
+          ? "bg-amber-500"
+          : row.original.status == "مكتمل"
+          ? "bg-teal-500"
+          : "bg-rose-500";
+      return (
+        <Badge className={cn("text-white", statusColor)}>
+          {row.original.status}
+        </Badge>
+      );
+    },
   },
   {
     id: "actions",
