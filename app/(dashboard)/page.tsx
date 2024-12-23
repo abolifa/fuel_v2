@@ -1,9 +1,7 @@
 "use client";
 
-import Heading from "@/components/Heading";
 import LoadingTable from "@/components/LoadingTable";
 import TankCard from "@/components/TankCard";
-import { Separator } from "@/components/ui/separator";
 import { refresh_time } from "@/lib/constant";
 import { Prisma, Tank } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +20,6 @@ export default function Home() {
   });
   return (
     <div className="w-full h-full p-10 space-y-5">
-      <Separator />
       {isLoading ? (
         <LoadingTable />
       ) : isError ? (

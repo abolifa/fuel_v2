@@ -67,11 +67,11 @@ const Sidebar = () => {
       href: "/orders",
       icon: Receipt,
     },
-    {
-      title: "التقارير",
-      href: "/reports",
-      icon: Sparkle,
-    },
+    // {
+    //   title: "التقارير",
+    //   href: "/reports",
+    //   icon: Sparkle,
+    // },
     {
       title: "الموظفين",
       href: "/employees",
@@ -106,12 +106,11 @@ const Sidebar = () => {
   return (
     <div className="w-[300px] sticky top-0 h-screen border-l p-5 flex flex-col gap-5">
       <div className="flex flex-col items-center justify-center gap-1.5 mt-5">
-        <Image alt="Logo" src={"/images/Logo.png"} width={80} height={80} />
+        <Image alt="Logo" src={"/images/Logo.png"} width={90} height={90} />
+        <h1 className="text-lg font-black">إدارة الوقود</h1>
       </div>
-      <UserNav />
-      <Separator className="-mt-3" />
 
-      <div className="flex flex-1 h-full flex-col w-full items-start justify-start gap-3">
+      <div className="flex flex-1 h-full flex-col w-full items-start justify-start gap-3 mt-5">
         {pages.map((item) => {
           const isActive =
             item.href !== "/"
@@ -122,8 +121,8 @@ const Sidebar = () => {
               key={item.title}
               href={item.href}
               className={cn(
-                "flex items-center justify-between gap-2 px-4 py-2 w-full bg-muted rounded-lg text-muted-foreground transition-all ease-in-out duration-300 hover:text-sidebar-primary-foreground",
-                isActive ? "bg-primary text-sidebar-primary-foreground" : null
+                "flex items-center justify-between gap-2 px-4 py-2 w-full bg-muted rounded-lg text-muted-foreground border transition-all ease-in-out duration-300 hover:text-sidebar-primary-foreground",
+                isActive ? "bg-primary text-secondary" : null
               )}
             >
               <div className="flex items-center gap-2">

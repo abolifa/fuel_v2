@@ -19,26 +19,31 @@ const jwtSecret = encoder.encode(JWT_SECRET);
 
 export async function middleware(req: NextRequest) {
   const cookie = req.cookies.get("authToken");
+  const authHeader = req.headers.get("Authorization");
   const url = req.nextUrl;
 
+  // Allow unauthenticated access to login and login API
   if (url.pathname === "/login" || url.pathname === "/api/auth/login") {
     return NextResponse.next();
   }
 
-  if (!cookie) {
+  // Extract token from cookies or Authorization header
+  const authToken =
+    cookie?.value ||
+    (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
+
+  if (!authToken) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const authToken = cookie.value;
-
   try {
-    // Add type annotation for the payload
+    // Verify the token
     const { payload } = await jwtVerify<JwtPayload>(authToken, jwtSecret);
     console.log("Decoded token payload:", payload);
 
     const response = NextResponse.next();
 
-    // Ensure payload.id is a string before setting it
+    // Set userId in cookies for server-side access
     response.cookies.set("userId", payload.id as string);
 
     return response;
