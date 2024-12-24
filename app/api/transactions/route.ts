@@ -6,7 +6,11 @@ export async function GET(req: Request) {
   try {
     const response = await prisma.transaction.findMany({
       include: {
-        car: true,
+        car: {
+          include: {
+            fuel: true,
+          },
+        },
         employee: true,
         tank: true,
       },

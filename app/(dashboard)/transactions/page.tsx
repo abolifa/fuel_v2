@@ -13,6 +13,7 @@ const Page = () => {
     queryKey: ["transactions", "transactions-pending"],
     queryFn: async () => {
       const res = await axios.get("/api/transactions");
+      console.log(res.data);
       return res.data;
     },
   });

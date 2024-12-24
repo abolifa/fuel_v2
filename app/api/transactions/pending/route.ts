@@ -7,7 +7,16 @@ export async function GET() {
     where: {
       status: "معلق",
     },
+    include: {
+      car: {
+        include: {
+          fuel: true,
+        },
+      },
+      employee: true,
+      tank: true,
+    },
   });
 
-  return NextResponse.json(pendingTransactions.length);
+  return NextResponse.json(pendingTransactions);
 }
